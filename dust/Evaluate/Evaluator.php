@@ -33,7 +33,7 @@ class Evaluator
         {
             $ctx->currentFilePath = $body->filePath;
         }
-        if ( is_array( $body->parts ) ) {
+        if ( \is_array( $body->parts ) ) {
             foreach($body->parts as $part)
             {
                 if($part instanceof Ast\Comment)
@@ -149,14 +149,14 @@ class Evaluator
                     {
                         $chunk = $this->evaluateElseBody($section, $ctx, $chunk);
                     }
-                    elseif(is_array($resolved) || $resolved instanceof \Traversable)
+                    elseif(\is_array($resolved) || $resolved instanceof \Traversable)
                     {
                         //array means loop
                         $iterationCount = -1;
                         foreach($resolved as $index => $value)
                         {
                             //run body
-                            $chunk = $this->evaluateBody($section->body, $ctx->push($value, $index, count($resolved), ++$iterationCount), $chunk);
+                            $chunk = $this->evaluateBody($section->body, $ctx->push($value, $index, \count($resolved), ++$iterationCount), $chunk);
                         }
                     }
                     elseif($resolved instanceof Chunk)
@@ -200,7 +200,7 @@ class Evaluator
     }
 
     public function evaluateElseBody(Ast\Section $section, Context $ctx, Chunk $chunk) {
-        if($section->bodies != NULL && count($section->bodies) > 0)
+        if($section->bodies != NULL && \count($section->bodies) > 0)
         {
             foreach($section->bodies as $value)
             {
@@ -313,7 +313,7 @@ class Evaluator
                 //apply filters in order...
                 $resolved = array_reduce($ref->filters, function ($prev, Ast\Filter $curr)
                 {
-                    if(array_key_exists($curr->key, $this->dust->filters))
+                    if(\array_key_exists($curr->key, $this->dust->filters))
                     {
                         $filter = $this->dust->filters[ $curr->key ];
 
@@ -345,11 +345,11 @@ class Evaluator
             {
                 if(strpos($value->value, '.') === false)
                 {
-                    $ret[ $value->key ] = intval($value->value);
+                    $ret[ $value->key ] = \intval($value->value);
                 }
                 else
                 {
-                    $ret[ $value->key ] = floatval($value->value);
+                    $ret[ $value->key ] = \floatval($value->value);
                 }
             }
             elseif($value instanceof Ast\IdentifierParameter)
@@ -370,7 +370,7 @@ class Evaluator
         $handledSpecial = true;
         while($handledSpecial)
         {
-            if(is_callable($resolved) && !is_string($resolved))
+            if(\is_callable($resolved) && !\is_string($resolved))
             {
                 //call callback
                 $resolved = $this->handleCallback($ctx, $resolved, $chunk, $section);
@@ -391,7 +391,7 @@ class Evaluator
                     }
                     else
                     {
-                        $newChunk->write(strval($value));
+                        $newChunk->write(\strval($value));
                     }
                 }
                 $resolved = $newChunk->getOut();
@@ -419,7 +419,7 @@ class Evaluator
 
     public function exists($val) {
         //object exists
-        if(is_object($val))
+        if(\is_object($val))
         {
             return true;
         }
@@ -429,37 +429,37 @@ class Evaluator
             return true;
         }
         //empty string does not exist
-        if(is_string($val))
+        if(\is_string($val))
         {
             return !empty($val);
         }
         //false does not exist
-        if(is_bool($val))
+        if(\is_bool($val))
         {
             return $val;
         }
         //empty arrays do not exist
-        if(is_array($val))
+        if(\is_array($val))
         {
             return !empty($val);
         }
 
         //nulls do not exist
-        return !is_null($val);
+        return !\is_null($val);
     }
 
     public function toDustString($val) {
-        if(is_bool($val))
+        if(\is_bool($val))
         {
             return $val ? 'true' : 'false';
         }
-        if(is_array($val))
+        if(\is_array($val))
         {
             return implode(',', $val);
         }
-        if(is_object($val) && !method_exists($val, '__toString'))
+        if(\is_object($val) && !\method_exists($val, '__toString'))
         {
-            return get_class($val);
+            return \get_class($val);
         }
 
         return (string) $val;
@@ -484,12 +484,12 @@ class Evaluator
                 }
             }
             //must be non-closure object
-            if(is_object($newThis) && !($newThis instanceof \Closure))
+            if(\is_object($newThis) && !($newThis instanceof \Closure))
             {
                 $callback = \Closure::bind($callback, $newThis);
             }
         }
-        if(is_object($callback) && method_exists($callback, '__invoke'))
+        if(\is_object($callback) && \method_exists($callback, '__invoke'))
         {
             $reflected = new \ReflectionMethod($callback, '__invoke');
         }
@@ -517,7 +517,7 @@ class Evaluator
         }
 
         //invoke
-        return call_user_func_array($callback, $args);
+        return \call_user_func_array($callback, $args);
     }
 
 }
