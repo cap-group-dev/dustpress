@@ -40,7 +40,7 @@ namespace Dust\Evaluate
          */
         #[\ReturnTypeWillChange]
         public function offsetGet($offset) {
-            for($i = 0; $i < count($this->section->bodies); $i++)
+            for($i = 0; $i < \count($this->section->bodies); $i++)
             {
                 if($this->section->bodies[ $i ]->key == $offset)
                 {
